@@ -29,6 +29,6 @@ body {
   align-items: center;
   text-align: center;
   color: rgb(211, 211, 211);
-  background: linear-gradient(to right, rgb(97, 97, 97), rgb(155, 197, 195));
+  background: linear-gradient(to right, rgb(65, 41, 90), rgb(47, 7, 67));
 }
 </style>
