@@ -1,14 +1,15 @@
 <template>
   <div class="hangman">
-    <h1>Tentativas: {{attempts}}</h1>
+    <h1>{{attempts}}</h1>
     <div class="letters">
       <div v-for="(item, index) in word" :key="index">
-        <div v-if="item.visible">
-          <Letter :letter="item.letter" />
+        <div class="letters">
+          <Letter v-if="item.visible" :letter="item.letter" />
         </div>
         <p class="bd"></p>
       </div>
     </div>
+    
     <button v-on:click="chooseWord">start</button>
     
     <Board/>
@@ -18,10 +19,18 @@
         <Letter :letter="item" usedWord/>
       </div>
     </div>
+
+
+    <div class="letters">
+      <div v-for="(item, index) in word" :key="index">
+        <Letter v-show="attempts == 0" :letter="item.letter"/>
+      </div>
+    </div>    
   </div>
 </template>
 
 <script>
+import { words } from "./words.js"
 import Letter from "./Letter.vue";
 import Board from "./keyboard/Board.vue";
 
@@ -29,28 +38,24 @@ export default {
   components: {
     Letter,
     Board
-  },
+  },  
 
   data() {
     return {
-      attempts: 6,
+      attempts: 10,
+      completed: false,
       word: [],
-      usedWord: [],
-      words: ["teclado", "computador", "mouse"],
-      keyboard: {
-        lvl1: ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-        lvl2: ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-        lvl3: ['z', 'x', 'c', 'v', 'b', 'n', 'm']
-      }
+      usedWord: []
     };
   },  
 
   mounted() {
+    //Check if the word match with keyboard
     window.addEventListener('keypress', e => {        
-        let a = String.fromCharCode(e.keyCode).toLowerCase();
+        let a = e.key.toLowerCase();
 
-        if(this.attempts > 0 && !this.usedWord.includes(a)) {          
-          let obj = this.word.filter((obj => obj.letter === a))
+        if(this.attempts > 0 && !this.usedWord.includes(a) && !this.completed) {          
+          let obj = this.word.filter((obj => obj.normLetter === a))
           
           if(obj == 0) {
             this.attempts--;
@@ -59,37 +64,50 @@ export default {
             for(var i = 0; i < obj.length; i++) {
               this.word[obj[i].id].visible = true;
             }
-          }
+          }           
         }
-      });    
-  },
-
-  created() {
-    this.chooseWord();
+        //Check if player won the game
+        this.completed = this.word.every(elem => elem.visible == true);
+      });
+    
   },
 
   methods: {
-    chooseWord() {
-      var i = Math.floor(Math.random() * 3);
-      var word = this.words[i];
-      
-      //Reset data
-      this.word = [];
-      this.attempts = 6;
-      this.usedWord = [];      
-      
-      for(var j = 0; j < word.length; j++) {
-        if(word[j] !== '') {
-          var obj = {letter: word[j], visible: false, id: j};          
-          this.word.push(obj);
-        }
-
+    initialState() {
+      return {
+        attempts: 10,
+        completed: false,
+        word: [],
+        usedWord: []
       }
     },
 
-    matchWord(n) {
-      if(this.attempts > 0 && !this.usedWord.includes(n)) {
-        let obj = this.word.filter((obj => obj.letter === n))              
+    resetData() {
+      Object.assign(this.$data, this.initialState());
+    },
+
+    chooseWord() {      
+      var word = words[Math.floor(Math.random() * words.length)];
+      var normalizedWord = word.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+
+      this.resetData();      
+      
+      for(var j = 0; j < word.length; j++) {
+        if(word[j] !== '') {
+          var obj = {
+            letter: word[j], 
+            normLetter: normalizedWord[j],
+            visible: false, 
+            id: j};
+          this.word.push(obj);
+        }
+      }
+    },
+
+    matchWord(n) {      
+      //Check if the word match with board
+      if(this.attempts > 0 && !this.usedWord.includes(n) && !this.completed) {
+        let obj = this.word.filter((obj => obj.normLetter === n))              
 
         if(obj == 0) {
           this.attempts--;
@@ -100,13 +118,16 @@ export default {
           }
         }
       }
-    }
+      //Check if player won the game
+      this.completed = this.word.every(elem => elem.visible == true);
+    },        
   }
 };
 </script>
 
 <style scoped>
-.letters {
+.letters {  
+  height: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -116,5 +137,7 @@ export default {
   border-bottom: 5px solid black;
   width: 40px;
   margin: 5px;
+  margin-bottom: 15px;
+  margin-top: 0px;
 }
 </style>

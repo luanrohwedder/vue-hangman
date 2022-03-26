@@ -17,6 +17,16 @@ export default {
 </script>
 
 <style>
+@font-face {
+  font-family: "Hind";
+  src: url("./font/Hind-Light.ttf");
+}
+
+* {
+  font-family: "Hind", monospace;      
+}
+
+
 body {
   margin: 0;
 }
@@ -29,6 +39,6 @@ body {
   align-items: center;
   text-align: center;
   color: rgb(211, 211, 211);
-  background: linear-gradient(to right, rgb(65, 41, 90), rgb(47, 7, 67));
+  background: linear-gradient(to right, rgb(96, 108, 136), rgb(63, 76, 107));
 }
 </style>
