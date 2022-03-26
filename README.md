@@ -1,24 +1,12 @@
 # vue-hangman
 
-## Project setup
-```
-npm install
-```
+A simple project using vue, this time I decide to create an clone of Hangman (only pt-br words).
+Display may bug on smartphone
 
-### Compiles and hot-reloads for development
+### Link to the site
+https://vue-hangman.onrender.com/
+
+### Run in your PC
 ```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
